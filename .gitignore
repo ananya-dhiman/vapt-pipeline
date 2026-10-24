@@ -1,0 +1,18 @@
+# Scan outputs, tool artifacts, logs — keep the repo to source only.
+results/**
+!results/**/
+!results/**/.gitkeep
+
+# jwt_tool / third-party tools cloned locally by scripts/lib.sh
+tools/
+
+# Python
+__pycache__/
+*.pyc
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/
