@@ -75,6 +75,40 @@ sqlmap and jwt_tool are native CLI tools):
 Each phase script checks for its own dependencies and prints an install hint
 and exits cleanly if something is missing, instead of failing midway.
 
+### Running on Kali Linux
+
+Kali ships Nmap, sqlmap, curl, and Python 3 already. Only Docker, `jq`, and
+`jwt_tool` typically need adding:
+
+```bash
+sudo apt update
+sudo apt install -y docker.io jq
+
+# Let your user run docker without sudo (log out/in, or newgrp, for it to take effect)
+sudo usermod -aG docker "$USER"
+sudo systemctl enable --now docker
+
+# jwt_tool isn't packaged — clone it into tools/ as scripts/lib.sh expects
+git clone https://github.com/ticarpi/jwt_tool tools/jwt_tool
+pip3 install -r tools/jwt_tool/requirements.txt --break-system-packages
+```
+
+Notes specific to Kali:
+
+- **Full-port Nmap scan (`-p-`) wants root/`CAP_NET_RAW`** for an accurate
+  SYN scan; otherwise Nmap silently falls back to a slower TCP connect
+  scan. Run recon as root, or via `sudo`, if you want the SYN scan:
+  `sudo make recon` (or `sudo ./run_pipeline.sh recon`).
+- **Docker group membership** only takes effect in a new shell/session —
+  if `docker ps` still asks for `sudo` after `usermod -aG docker`, log out
+  and back in (or reboot the VM).
+- Recent Kali's default user is **not** root; if you prefer not to add the
+  docker group, just prefix every `make`/`./run_pipeline.sh` call with
+  `sudo` instead.
+- `pip3 install` on current Kali (Debian 12+) is PEP 668 "externally
+  managed" by default — the `--break-system-packages` flag above is the
+  simplest fix; a venv works too if you prefer.
+
 ---
 
 ## Quick start
